@@ -1,0 +1,38 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class= "container">
+    <h1>User Profile</h1>
+    {% if user.profile_image %}
+    <img src="{{ user.profile_image.url }}" alt="Current Profile Image" style="width:100px"><br>
+    {% endif %}
+    <p>First Name: {{ user.first_name }}</p>
+    <p>Last Name: {{ user.last_name }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Username: {{ user.username }}</p>
+
+    <h2>Edit Profile</h2>
+
+    <form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}"><br>
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}"><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}"><br>
+        <label for="profile_image">Change Profile Image:</label>
+        <input type="file" id="profile_image" name="profile_image" ><br>
+        <input type="submit" value="Update Profile">
+    </form>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,70 @@
+{% extends 'blog/base.html' %}
+
+{% load humanize %}
+
+{% block content %}
+    <article class="post">
+
+        <div class="featured-image-{{ post.pk }}"> <!-- Give each image a unique class based on post.pk -->
+            {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class = "img-thumbnail">
+            {% endif %}
+        </div><br>
+
+        <aside class="actions">
+            {% if user.is_authenticated and post.author == user %}
+                <a class="btn btn-secondary" href="{% url 'post_edit' slug=post.slug %}">
+                    {% include './icons/pencil-fill.svg' %}
+                </a>
+            {% endif %}
+        </aside>
+
+        {% if post.published_date %}
+            <time class="date">
+                {{ post.published_date }}
+            </time>
+        {% endif %}
+
+        <h1>{{ post.title }}</h1><br>
+        <p style="white-space: pre-line;">{{ post.text }}</p><br>
+
+        <div class="collapse show" id="commentsCollapse">
+            <div class="card card-body">
+                <h3><b>Comments</b></h3>
+
+                <form method="post" action="{% url 'add_comment' post.pk %}">
+                    {% csrf_token %}
+                    <textarea name="comment" placeholder="Add your comment here" required></textarea><br>
+                    <input type="hidden" name="parent_id" value="{{ comment.sno }}"> 
+                    <button type="submit">Add Comment</button>
+                </form><br>
+
+                {% for comment in post.blogcomment_set.all %}
+                <div class="comment">
+                    <p><strong>{{ comment.first_name }}</strong>: {{ comment.comment }}</p>
+                    <p>Time- {{ comment.timestamp | naturaltime}}</p>
+                    
+                    <!-- Display replies -->
+                    {% if comment.replies.all %}
+                        <ul>
+                            {% for reply in comment.replies.all %}
+                                <li>{{ reply.first_name }}: {{ reply.comment }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                    <!-- Reply form -->
+                    <form method="post" action="{% url 'add_comment' post.pk %}">
+                        {% csrf_token %}
+                        <textarea name="comment" placeholder="Reply to this comment" required></textarea><br>
+                        <input type="hidden" name="parent_id" value="{{ comment.sno }}">
+                        <button type="submit">Add Reply</button>
+                    </form><br/>
+                </div>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}  
+            </div>
+        </div>
+    </article>
+{% endblock %}
