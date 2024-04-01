@@ -92,6 +92,7 @@ def handleLogin(request):
         username = request.POST['loginusername']
         password = request.POST['loginpass']
         user = authenticate(username=username, password=password)
+        print(user)
         if user is not None:
             login(request, user)
             messages.success(request, "Login successful!")
